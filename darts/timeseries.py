@@ -2886,6 +2886,8 @@ class TimeSeries:
         TimeSeries
             A new TimeSeries with the new values appended
         """
+        if len(values) == 0:
+            raise ValueError("`values` cannot be an empty array.")
         if self._has_datetime_index:
             idx = pd.DatetimeIndex(
                 [self.end_time() + i * self._freq for i in range(1, len(values) + 1)],
@@ -2945,7 +2947,8 @@ class TimeSeries:
         TimeSeries
             A new TimeSeries with the new values prepended.
         """
-
+        if len(values) == 0:
+            raise ValueError("`values` cannot be an empty array.")
         if self._has_datetime_index:
             idx = pd.DatetimeIndex(
                 [
@@ -2953,12 +2956,14 @@ class TimeSeries:
                     for i in reversed(range(1, len(values) + 1))
                 ],
                 freq=self._freq,
+                name=self.time_index.name,
             )
         else:
             idx = pd.RangeIndex(
                 self.start_time() - self.freq * len(values),
                 self.start_time(),
                 step=self.freq,
+                name=self.time_index.name
             )
 
         return self.prepend(
@@ -2968,7 +2973,7 @@ class TimeSeries:
                 fill_missing_dates=False,
                 static_covariates=self.static_covariates,
                 columns=self.columns,
-                hierarchy=self.hierarchy,
+                hierarchy=self.hierarchy
             )
         )
 
